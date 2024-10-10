@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Exiled.API.Features;
-using Exiled.CustomRoles.Events;
-using Exiled.Events.Handlers;
-using MEC;
-using PluginAPI.Events;
+﻿using Exiled.API.Features;
 using SCP_SL_SAVELOAD.EventHandlers;
-using Player = Exiled.Events.Handlers.Player;
+using System;
+using System.Collections.Generic;
 
 namespace SCP_SL_SAVELOAD
 {
-    public class SaveLoadPlugin :  Plugin<Config>
+    public class SaveLoadPlugin : Plugin<Config>
     {
 
         public override string Name => "SCP Save/Load";
@@ -22,16 +14,16 @@ namespace SCP_SL_SAVELOAD
 
         public override string Prefix => "omni-gordonfreeman-agentissac";
         public static SaveLoadPlugin pluginInstance { get; set; }
-        public override Version Version => new(1, 0, 0);
+        public override Version Version => new(1, 0, 1);
         PluginEventHandler EventHandler;
         public static Dictionary<string, SaveState> SavePlayers { get; } = new();
-        public static Dictionary<string,int> LoadCooldown { get; } = new();
-        public static Dictionary<string, int> SaveCooldown{ get; } = new();
+        public static Dictionary<string, int> LoadCooldown { get; } = new();
+        public static Dictionary<string, int> SaveCooldown { get; } = new();
         public override void OnEnabled()
         {
-            pluginInstance=this;
+            pluginInstance = this;
             RegisterEvents();
-            
+
         }
 
         public override void OnDisabled()
@@ -42,7 +34,7 @@ namespace SCP_SL_SAVELOAD
         {
 
             EventHandler = new PluginEventHandler();
-            
+
         }
 
         private void UnregisterEvents()

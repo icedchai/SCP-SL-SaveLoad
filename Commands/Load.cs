@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CommandSystem;
+﻿using CommandSystem;
 using Exiled.API.Enums;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
 using Exiled.API.Features.Items;
 using Exiled.API.Features.Pickups;
-using Exiled.Permissions.Extensions;
-using MEC;
+using Exiled.CustomItems.API.Features;
 using PlayerRoles;
 using SCP_SL_SAVELOAD;
+using System;
+using System.Collections.Generic;
 
 namespace SCP_SL_Test_Plugin.Commands
 {
@@ -19,10 +17,11 @@ namespace SCP_SL_Test_Plugin.Commands
     {
         public string Command { get; } = "load";
 
-        public string[] Aliases { get; } = new[] { "ld","l" };
+        public string[] Aliases { get; } = new[] { "ld", "l" };
 
         public string Description { get; } = "Load your latest savestate.";
         public event EventHandler CanExecuteChanged;
+
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
 
@@ -39,7 +38,7 @@ namespace SCP_SL_Test_Plugin.Commands
                 response = "No save state available for this player";
                 return false;
             }
-            player.ShowHint("Loading...",7);
+            player.ShowHint("Loading...", 7);
 
             SaveState saveFile = SaveLoadPlugin.SavePlayers[player.UserId];
             player.Role.Set(saveFile.Role, RoleSpawnFlags.None);
@@ -61,17 +60,34 @@ namespace SCP_SL_Test_Plugin.Commands
                 player.ClearInventory(false);
                 foreach (Item savedItem in saveFile.Items)
                 {
+                    bool hadItem = true;
                     if (newItems.Contains(savedItem))
                     {
                         newItems.Remove(savedItem);
                     }
-                    if (!player.HasItem(savedItem))
+                    bool isCi = false;
+                    foreach (CustomItem ci in CustomItem.Registered)
                     {
-                        
-                    }
-                    player.RemoveItem(savedItem, false);
+                        if (ci.Check(savedItem))
+                        {
+                           
+                            ci.Give(player);
+                            isCi = true;
 
-                    player.AddItem(savedItem.Clone()) ;
+                            break;
+                        }
+                    }
+                    if (!isCi)
+                    {
+                        player.AddItem(savedItem.Clone());
+
+                    }
+                    if (Pickup.Get(savedItem.Serial) != null)
+                    {
+                        Pickup.Get(savedItem.Serial).Destroy();
+                    }
+
+
 
                 }
                 //drop new items (picked up since save) - works ok
@@ -103,7 +119,9 @@ namespace SCP_SL_Test_Plugin.Commands
             }
             SaveLoadPlugin.SavePlayers[player.UserId].Items.Clear();
             SaveLoadPlugin.SavePlayers[player.UserId].Items = newItems;
-
+            Random rnd = new Random();
+            if (rnd.Next(1, 100) < SaveLoadPlugin.pluginInstance.Config.NodeGraphChance)
+                player.ShowHint("Node Graph out of Date. Rebuilding...", 8);
             response = "Loaded!";
             // Return true if the command was executed successfully; otherwise, false.
             return true;

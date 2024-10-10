@@ -1,13 +1,9 @@
-﻿using System;
+﻿using Exiled.API.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Exiled.API.Interfaces;
 
 
-namespace SCP_SL_SAVELOAD 
+namespace SCP_SL_SAVELOAD
 {
     public class Config : IConfig
     {
@@ -18,6 +14,8 @@ namespace SCP_SL_SAVELOAD
         public bool Debug { get; set; } = false;
 
         [Description("Steam/Discord IDs of players allowed to Save/Load")]
-        public List<string> AllowedPlayers { get; set; } = new (){  };
+        public List<string> AllowedPlayers { get; set; } = new() { };
+        [Description("% chance of the player encountering an out of date Node Graph")]
+        public int NodeGraphChance { get; set; } = 20;
     }
 }

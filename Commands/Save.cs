@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
-using CommandSystem;
+﻿using CommandSystem;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
-using Exiled.Permissions.Extensions;
+using System;
+using System.Linq;
 
 namespace SCP_SL_SAVELOAD.Commands
 {
@@ -19,14 +18,15 @@ namespace SCP_SL_SAVELOAD.Commands
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            Player player=Player.Get(sender);
+            Player player = Player.Get(sender);
 
             if (!SaveLoadPlugin.pluginInstance.Config.AllowedPlayers.Contains(player.UserId))
             {
                 response = "You do not have permission to create a savestate.";
                 return false;
             }
-            if (player.IsDead){
+            if (player.IsDead)
+            {
                 response = "You cannot save a state while dead";
                 return false;
             }
@@ -58,7 +58,7 @@ namespace SCP_SL_SAVELOAD.Commands
                     Role = player.Role.Type,
                     CurrentRound = true,
                     Ammo = player.Ammo.ToDictionary(x => x.Key.GetAmmoType(), x => x.Value),
-                }) ;
+                });
             }
             player.ShowHint("Saved.");
             response = "Saved!";
